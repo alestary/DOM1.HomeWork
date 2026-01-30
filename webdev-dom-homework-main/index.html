@@ -49,15 +49,17 @@
           type="text"
           class="add-form-name"
           placeholder="Введите ваше имя"
+          id="name-input"
         />
         <textarea
           type="textarea"
           class="add-form-text"
           placeholder="Введите ваш коментарий"
           rows="4"
+          id="comment-input"
         ></textarea>
         <div class="add-form-row">
-          <button class="add-form-button">Написать</button>
+          <button class="add-form-button" id="add-form-button">Написать</button>
         </div>
       </div>
     </div>
@@ -65,7 +67,62 @@
 
   <script>
     "use strict";
-    // Код писать здесь
+    const nameInput = document.getElementById("name-input");
+    const commentInput = document.getElementById("comment-input");
+    const addButton = document.getElementById("add-form-button");
+    const commentsList = document.querySelector(".comments");
+    
+    nameInput.addEventListener('input', function(){
+      console.log('Имя изменено:', this.value);
+    });
+    commentInput.addEventListener('input', function() {
+        console.log('Комментарий изменен:', this.value);
+    });
+    addButton.addEventListener('click', function(event) {
+    event.preventDefault();
+
+      const name = nameInput.value.trim();
+      const commentText = commentInput.value.trim();
+          
+      if (!name || !commentText) {
+        alert('Пожалуйста, заполните оба поля');
+        return;
+      }
+
+    const now = new Date();
+    const day = now.getDate().toString().padStart(2, '0');
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    const year = now.getFullYear().toString().slice(-2);
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+
+    const dateString = `${day}.${month}.${year} ${hours}:${minutes}`;
+
+
+    const newCommentHTML = `
+      <li class="comment">
+        <div class="comment-header">
+          <div>${name}</div>
+          <div>${dateString}</div>
+        </div>
+        <div class="comment-body">
+          <div class="comment-text">
+            ${commentText}
+          </div>
+        </div>
+        <div class="comment-footer">
+          <div class="likes">
+            <span class="likes-counter">0</span>
+            <button class="like-button"></button>
+          </div>
+        </div>
+      </li>
+    `;
+
+    commentsList.innerHTML += newCommentHTML;
+    nameInput.value = '';
+    commentInput.value = '';
+    });
     console.log("It works!");
   </script>
 </html>
