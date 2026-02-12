@@ -50,6 +50,17 @@
           isLiked: true
         }
       ];
+      function escapeHtml(text) {
+        if (typeof text !== 'string') return text;
+        return text
+          .replaceAll('&', '&amp;')
+          .replaceAll('<', '&lt;')
+          .replaceAll('>', '&gt;')
+          .replaceAll('"', '&quot;')
+          .replaceAll("'", '&#039;');
+      }
+
+      let replyingTo = null;
 
       function formatDate(date) {
         const day = date.getDate().toString().padStart(2, "0");
@@ -69,11 +80,11 @@
           return `
             <li class="comment" data-id="${comment.id}">
               <div class="comment-header">
-                <div>${comment.name}</div>
+                <div>${escapeHtml(comment.name)}</div>
                 <div>${comment.date}</div>
               </div>
               <div class="comment-body">
-                <div class="comment-text">${comment.text}</div>
+                <div class="comment-text">${escapeHtml(comment.text)}</div>
               </div>
               <div class="comment-footer">
                 <div class="likes">
@@ -88,13 +99,37 @@
         commentsList.innerHTML = commentsHtml;
       }
 
-      function initLikeHandlers() {
+      function initEventHandlers() {
         const commentsList = document.getElementById("comments-list");
         
         commentsList.addEventListener("click", (event) => {
           if (event.target.classList.contains("like-button")) {
+            return;
+          }
+          
+          const commentElement = event.target.closest(".comment");
+          if (!commentElement) return;
+          
+          const commentId = Number(commentElement.dataset.id);
+          const comment = comments.find(c => c.id === commentId);
+          
+          if (comment) {
+            replyingTo = commentId;
+            
+            const replyText = `> ${comment.name}:\n${comment.text}\n\n`;
+            
+            const commentInput = document.getElementById("comment-input");
+            commentInput.value = replyText;
+            
+            commentInput.focus();
+            
+            commentInput.scrollIntoView({ behavior: "smooth" });
+          }
+        });
+        
+        commentsList.addEventListener("click", (event) => {
+          if (event.target.classList.contains("like-button")) {
             const commentId = Number(event.target.dataset.id);
-
             const commentIndex = comments.findIndex(comment => comment.id === commentId);
             
             if (commentIndex !== -1) {
@@ -112,28 +147,32 @@
       }
 
       function addComment(name, text) {
-        if (!name.trim() || !text.trim()) {
+        const escapedName = escapeHtml(name.trim());
+        const escapedText = escapeHtml(text.trim());
+        
+        if (!escapedName || !escapedText) {
           alert("Пожалуйста, заполните оба поля");
           return;
         }
 
         const newComment = {
           id: comments.length > 0 ? Math.max(...comments.map(c => c.id)) + 1 : 1,
-          name: name,
+          name: escapedName,
           date: formatDate(new Date()),
-          text: text,
+          text: escapedText,
           likes: 0,
           isLiked: false,
         };
-
         comments.push(newComment);
         
         renderComments();
+
+        replyingTo = null;
       }
 
       document.addEventListener("DOMContentLoaded", () => {
         renderComments();
-        initLikeHandlers();
+        initEventHandlers();
       
         const nameInput = document.getElementById("name-input");
         const commentInput = document.getElementById("comment-input");
