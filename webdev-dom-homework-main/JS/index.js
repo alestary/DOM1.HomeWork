@@ -1,66 +1,78 @@
 "use strict";
-import { comments } from './comments.js';
-import { escapeHtml } from './replaceAll.js';
+import { comments, loadComments } from './comments.js';
 import { renderComments } from './render.js';
 import { initEventHandlers } from './init.js';
+import { API_URL } from './config.js';
 
-function formatDate(date) {
-  const day = date.getDate().toString().padStart(2, "0");
-  const month = (date.getMonth() + 1).toString().padStart(2, "0");
-  const year = date.getFullYear().toString().slice(-2);
-  const hours = date.getHours().toString().padStart(2, "0");
-  const minutes = date.getMinutes().toString().padStart(2, "0");
-  return `${day}.${month}.${year} ${hours}:${minutes}`;
-}
+async function addComment(name, text) {
+  const trimmedName = name.trim();
+  const trimmedText = text.trim();
 
-
-function addComment(name, text) {
-  const escapedName = escapeHtml(name.trim());
-  const escapedText = escapeHtml(text.trim());
-  
-  if (!escapedName || !escapedText) {
-    alert("Пожалуйста, заполните оба поля");
-    return;
+  if (trimmedName.length < 3 || trimmedText.length < 3) {
+    alert('Имя и текст должны содержать не менее 3 символов');
+    return false;
   }
 
-  const newComment = {
-    id: comments.length > 0 ? Math.max(...comments.map(c => c.id)) + 1 : 1,
-    name: escapedName,
-    date: formatDate(new Date()),
-    text: escapedText,
-    likes: 0,
-    isLiked: false,
-  };
-  comments.push(newComment);
-  
-  renderComments();
+  try {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: trimmedName, text: trimmedText })
+    });
+
+    if (response.status === 400) {
+      const errorData = await response.json();
+      alert(`Ошибка: ${errorData.error}`);
+      return false;
+    }
+
+    if (!response.ok) {
+      throw new Error(`Ошибка при добавлении: ${response.status}`);
+    }
+
+    await loadComments(); 
+    renderComments();
+    return true;
+  } catch (error) {
+    console.error(error);
+    alert('Не удалось добавить комментарий. Попробуйте позже.');
+    return false;
+  }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  renderComments();
+document.addEventListener("DOMContentLoaded", async () => {
   initEventHandlers();
+
+  await loadComments();
+  renderComments();
 
   const nameInput = document.getElementById("name-input");
   const commentInput = document.getElementById("comment-input");
   const addButton = document.getElementById("add-button");
-  
-  addButton.addEventListener("click", () => {
-    addComment(nameInput.value, commentInput.value);
-    
-    nameInput.value = "";
-    commentInput.value = "";
-    
-    nameInput.focus();
-  });
-  
-    commentInput.addEventListener("keydown", (event) => {
-    if (event.ctrlKey && event.key === "Enter") {
-      addComment(nameInput.value, commentInput.value);
+
+  addButton.addEventListener("click", async () => {
+    const name = nameInput.value;
+    const text = commentInput.value;
+    const success = await addComment(name, text);
+    if (success) {
       nameInput.value = "";
       commentInput.value = "";
       nameInput.focus();
     }
   });
-  
+
+  commentInput.addEventListener("keydown", async (event) => {
+    if (event.ctrlKey && event.key === "Enter") {
+      const name = nameInput.value;
+      const text = commentInput.value;
+      const success = await addComment(name, text);
+      if (success) {
+        nameInput.value = "";
+        commentInput.value = "";
+        nameInput.focus();
+      }
+    }
+  });
+
   console.log("Приложение загружено! Лайки работают.");
 });

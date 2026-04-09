@@ -1,8 +1,6 @@
 import { escapeHtml } from './replaceAll.js';
 import { comments } from './comments.js';
 
-export {renderComments};
-
 function renderComments() {
   const commentsList = document.getElementById("comments-list");
   
@@ -30,3 +28,5 @@ function renderComments() {
 
   commentsList.innerHTML = commentsHtml;
 }
+
+export {renderComments};
