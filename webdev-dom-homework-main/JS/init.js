@@ -1,8 +1,6 @@
 import { comments } from './comments.js';
 import { renderComments } from './render.js';
 
-export {initEventHandlers};
-
 function initEventHandlers() {
         const commentsList = document.getElementById("comments-list");
         
@@ -48,3 +46,5 @@ function initEventHandlers() {
           }
         });
       }
+
+export {initEventHandlers};

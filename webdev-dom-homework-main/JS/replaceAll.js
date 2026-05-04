@@ -1,5 +1,3 @@
-export {escapeHtml};
-
 function escapeHtml(text) {
     if (typeof text !== 'string') return text;
     return text
@@ -9,3 +7,5 @@ function escapeHtml(text) {
         .replaceAll('"', '&quot;')
         .replaceAll("'", '&#039;');
     }
+
+export {escapeHtml};
