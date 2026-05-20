@@ -2,23 +2,25 @@ import { API_URL } from './config.js';
 
 export let comments = [];
 
-export async function loadComments() {
-  const response = await fetch(API_URL);
+export function loadComments() {
+  return fetch(API_URL)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Ошибка загрузки: ${response.status}`);
+      }
 
-  if (!response.ok) {
-    throw new Error(`Ошибка загрузки: ${response.status}`);
-  }
-
-  const data = await response.json();
-
-  comments = data.comments.map((comment) => ({
-    id: comment.id,
-    name: comment.author.name,
-    date: formatDateFromISO(comment.date),
-    text: comment.text,
-    likes: comment.likes,
-    isLiked: false,
-  }));
+      return response.json();
+    })
+    .then((data) => {
+      comments = data.comments.map((comment) => ({
+        id: comment.id,
+        name: comment.author.name,
+        date: formatDateFromISO(comment.date),
+        text: comment.text,
+        likes: comment.likes,
+        isLiked: false,
+      }));
+    });
 }
 
 export function formatDateFromISO(isoString) {
