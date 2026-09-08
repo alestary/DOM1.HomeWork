@@ -1,12 +1,27 @@
 import { API_URL } from './config.js';
 
 export let comments = [];
+export class ApiError extends Error {
+  constructor(message, status) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+  }
+}
+
+export function isNetworkError(error) {
+  return error instanceof TypeError;
+}
 
 export function loadComments() {
   return fetch(API_URL)
     .then((response) => {
+      if (response.status === 500) {
+        throw new ApiError('Сервер сломался', 500);
+      }
+
       if (!response.ok) {
-        throw new Error(`Ошибка загрузки: ${response.status}`);
+        throw new ApiError(`Ошибка загрузки: ${response.status}`, response.status);
       }
 
       return response.json();
