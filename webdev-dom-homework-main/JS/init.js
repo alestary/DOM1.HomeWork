@@ -12,7 +12,7 @@ function initEventHandlers() {
           const commentElement = event.target.closest(".comment");
           if (!commentElement) return;
           
-          const commentId = Number(commentElement.dataset.id);
+          const commentId = commentElement.dataset.id;
           const comment = comments.find(c => c.id === commentId);
           
           if (comment) {
@@ -30,7 +30,7 @@ function initEventHandlers() {
         
         commentsList.addEventListener("click", (event) => {
           if (event.target.classList.contains("like-button")) {
-            const commentId = Number(event.target.dataset.id);
+            const commentId = event.target.dataset.id;
             const commentIndex = comments.findIndex(comment => comment.id === commentId);
             
             if (commentIndex !== -1) {
