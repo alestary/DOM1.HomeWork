@@ -1,0 +1,57 @@
+import { API_URL } from './config.js';
+
+export let comments = [];
+
+export class ApiError extends Error {
+  constructor(message, status) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+  }
+}
+
+export function isNetworkError(error) {
+  return error instanceof TypeError;
+}
+
+export function loadComments() {
+  return fetch(API_URL)
+    .then((response) => {
+      if (response.status === 500) {
+        throw new ApiError('Сервер сломался', 500);
+      }
+
+      if (!response.ok) {
+        throw new ApiError(
+          `Ошибка загрузки: ${response.status}`,
+          response.status
+        );
+      }
+
+      return response.json();
+    })
+    .then((data) => {
+      comments = data.comments.map((comment) => ({
+        id: comment.id,
+        name: comment.author.name,
+        date: formatDateFromISO(comment.date),
+        text: comment.text,
+        likes: comment.likes,
+        isLiked: comment.isLiked,
+      }));
+    });
+}
+
+export function formatDateFromISO(isoString) {
+  const date = new Date(isoString);
+
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1)
+    .toString()
+    .padStart(2, '0');
+  const year = date.getFullYear().toString().slice(-2);
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+
+  return `${day}.${month}.${year} ${hours}:${minutes}`;
+}
