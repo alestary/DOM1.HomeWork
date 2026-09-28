@@ -140,3 +140,69 @@ body {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+.auth-message {
+  margin-top: 32px;
+  font-size: 18px;
+}
+
+.auth-message a {
+  color: #bcec30;
+  text-decoration: none;
+}
+
+.auth-message a:hover {
+  text-decoration: underline;
+}
+
+.login-page {
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding-top: 80px;
+  background: #202020;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  font-family: Helvetica;
+  color: #ffffff;
+}
+
+.login-form {
+  width: 596px;
+  box-sizing: border-box;
+  padding: 40px;
+  background: radial-gradient(
+    75.42% 75.42% at 50% 42.37%,
+    rgba(53, 53, 53, 0) 22.92%,
+    #7334ea 100%
+  );
+  border-radius: 20px;
+}
+
+.login-title {
+  margin: 0 0 30px;
+  font-size: 32px;
+}
+
+.login-form .add-form-name {
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 12px;
+}
+
+.login-password {
+  margin-top: 0;
+}
+
+.back-button {
+  margin-top: 20px;
+  border: none;
+  background: transparent;
+  color: #bcec30;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.back-button:hover {
+  text-decoration: underline;
+}
