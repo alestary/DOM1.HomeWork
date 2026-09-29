@@ -6,7 +6,6 @@ import {
 import { renderComments } from './render.js';
 import { initEventHandlers } from './init.js';
 import { API_URL } from './config.js';
-import { renderLogin } from './login.js';
 
 let isAddingComment = false;
 
@@ -257,15 +256,6 @@ function loadAndRenderComments() {
         'Не удалось загрузить комментарии. Попробуйте позже.'
       );
     });
-}
-
-function renderCurrentPage() {
-  if (window.location.hash === '#login') {
-    renderLogin();
-    return;
-  }
-
-  renderCommentsPage();
 }
 
 window.addEventListener('hashchange', renderCurrentPage);
