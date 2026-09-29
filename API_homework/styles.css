@@ -206,3 +206,24 @@ body {
 .back-button:hover {
   text-decoration: underline;
 }
+
+@media (max-width: 640px) {
+  .comment,
+  .add-form,
+  .login-form {
+    width: calc(100% - 32px);
+  }
+
+  .comment {
+    padding: 28px;
+  }
+
+  .comment-text {
+    font-size: 24px;
+  }
+
+  .add-form-name {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}

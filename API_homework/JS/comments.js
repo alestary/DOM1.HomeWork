@@ -16,29 +16,40 @@ export function isNetworkError(error) {
 
 export function loadComments() {
   return fetch(API_URL)
-    .then((response) => {
+    .then(async (response) => {
       if (response.status === 500) {
         throw new ApiError('Сервер сломался', 500);
       }
 
       if (!response.ok) {
-        throw new ApiError(
-          `Ошибка загрузки: ${response.status}`,
-          response.status
-        );
+        let message = `Ошибка загрузки: ${response.status}`;
+
+        try {
+          const errorData = await response.json();
+
+          if (errorData.error) {
+            message = errorData.error;
+          }
+        } catch {
+          // У ответа может не быть JSON-тела.
+        }
+
+        throw new ApiError(message, response.status);
       }
 
       return response.json();
     })
     .then((data) => {
-      comments = data.comments.map((comment) => ({
-        id: comment.id,
-        name: comment.author.name,
-        date: formatDateFromISO(comment.date),
-        text: comment.text,
-        likes: comment.likes,
-        isLiked: comment.isLiked,
-      }));
+      comments = Array.isArray(data.comments)
+        ? data.comments.map((comment) => ({
+            id: comment.id,
+            name: comment.author.name,
+            date: formatDateFromISO(comment.date),
+            text: comment.text,
+            likes: comment.likes,
+            isLiked: comment.isLiked,
+          }))
+        : [];
     });
 }
 

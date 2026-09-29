@@ -2,31 +2,51 @@ import { escapeHtml } from './replaceAll.js';
 import { comments } from './comments.js';
 
 function renderComments() {
-  const commentsList = document.getElementById("comments-list");
-  
-  const commentsHtml = comments.map((comment) => {
-    const likeButtonClass = comment.isLiked ? "like-button -active-like" : "like-button";
-    
-    return `
-      <li class="comment" data-id="${comment.id}">
-        <div class="comment-header">
-          <div>${escapeHtml(comment.name)}</div>
-          <div>${comment.date}</div>
-        </div>
-        <div class="comment-body">
-          <div class="comment-text">${escapeHtml(comment.text)}</div>
-        </div>
-        <div class="comment-footer">
-          <div class="likes">
-            <span class="likes-counter">${comment.likes}</span>
-            <button class="${likeButtonClass}" data-id="${comment.id}"></button>
+  const commentsList = document.getElementById('comments-list');
+
+  if (!commentsList) {
+    return;
+  }
+
+  const commentsHtml = comments
+    .map((comment) => {
+      const likeButtonClass = comment.isLiked
+        ? 'like-button -active-like'
+        : 'like-button';
+
+      return `
+        <li
+          class="comment"
+          data-id="${escapeHtml(comment.id)}"
+        >
+          <div class="comment-header">
+            <div>${escapeHtml(comment.name)}</div>
+            <div>${escapeHtml(comment.date)}</div>
           </div>
-        </div>
-      </li>
-    `;
-  }).join("");
+
+          <div class="comment-body">
+            <div class="comment-text">
+              ${escapeHtml(comment.text)}
+            </div>
+          </div>
+
+          <div class="comment-footer">
+            <div class="likes">
+              <span class="likes-counter">${comment.likes}</span>
+              <button
+                class="${likeButtonClass}"
+                data-id="${escapeHtml(comment.id)}"
+                aria-label="Поставить лайк"
+                type="button"
+              ></button>
+            </div>
+          </div>
+        </li>
+      `;
+    })
+    .join('');
 
   commentsList.innerHTML = commentsHtml;
 }
 
-export {renderComments};
+export { renderComments };
